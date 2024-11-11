@@ -3,14 +3,16 @@ package com.dreyesyho.myapplication.data
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
+const val APIKEY = "ea378a6dfe032f00ce2f79987d602c7c"
+
 class WeathersRepositoryImpl(
     private val weathersAPI: WeathersAPI,
     private val dispatcher: CoroutineDispatcher
 ): WeathersRepository {
-    override suspend fun getPets(): NetworkResult<List<Weather>> {
+    override suspend fun getWeather(): NetworkResult<WeatherResponse> {
         return withContext(dispatcher) {
             try {
-                val response = weathersAPI.fetchWeathers("")
+                val response = weathersAPI.fetchWeather("toronto", APIKEY)
                 if (response.isSuccessful) {
                     NetworkResult.Success(response.body()!!)
                 } else {

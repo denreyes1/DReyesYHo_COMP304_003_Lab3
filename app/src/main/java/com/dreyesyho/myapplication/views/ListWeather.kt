@@ -25,10 +25,13 @@ import com.dreyesyho.myapplication.data.WeatherResponse
 import com.dreyesyho.myapplication.data.getMockWeatherData
 import com.dreyesyho.myapplication.data.getWeatherIcon
 import com.dreyesyho.myapplication.data.kelvinToCelsius
+import com.dreyesyho.myapplication.viewmodel.WeatherViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ListWeather(modifier: Modifier,
                 onItemClicked: (WeatherResponse) -> Unit) {
+    val weatherViewModel: WeatherViewModel = koinViewModel()
     LazyColumn (
         modifier = modifier
             .padding(top=16.dp),

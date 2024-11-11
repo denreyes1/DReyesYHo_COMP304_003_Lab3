@@ -1,9 +1,9 @@
 package com.dreyesyho.myapplication.views
 
-import com.dreyesyho.myapplication.data.Weather
+import com.dreyesyho.myapplication.data.WeatherResponse
 
 data class WeathersUIState(
     val isLoading: Boolean = false,
-    val pets: List<Weather> = emptyList(),
+    val weather: ArrayList<WeatherResponse> = ArrayList(),
     val error: String? = null
 )

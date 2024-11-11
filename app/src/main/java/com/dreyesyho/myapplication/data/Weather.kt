@@ -128,11 +128,11 @@ fun kelvinToCelsius(kelvin: Double): Int {
 
 fun getWeatherIcon(weatherCondition: String): Int {
     return when (weatherCondition) {
-        "Clear" -> R.drawable.clear_day // Replace with your sunny icon
-        "Clouds" -> R.drawable.partly_cloudy_day // Replace with your cloudy icon
-        "Rain" -> R.drawable.showers_rain // Replace with your rainy icon
-        "Snow" -> R.drawable.showers_snow // Replace with your snowy icon
-        "Thunderstorm" -> R.drawable.strong_thunderstorms // Replace with your thunderstorm icon
-        else -> R.drawable.cloudy // Default icon if no match
+        "Clear" -> R.drawable.clear_day
+        "Clouds" -> R.drawable.partly_cloudy_day
+        "Rain" -> R.drawable.showers_rain
+        "Snow" -> R.drawable.showers_snow
+        "Thunderstorm" -> R.drawable.strong_thunderstorms
+        else -> R.drawable.cloudy
     }
 }
