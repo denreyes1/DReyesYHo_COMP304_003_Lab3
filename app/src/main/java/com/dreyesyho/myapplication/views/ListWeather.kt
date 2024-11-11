@@ -1,6 +1,7 @@
 package com.dreyesyho.myapplication.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,8 @@ import com.dreyesyho.myapplication.data.getWeatherIcon
 import com.dreyesyho.myapplication.data.kelvinToCelsius
 
 @Composable
-fun ListWeather(modifier: Modifier) {
+fun ListWeather(modifier: Modifier,
+                onItemClicked: (WeatherResponse) -> Unit) {
     LazyColumn (
         modifier = modifier
             .padding(top=16.dp),
@@ -38,17 +40,20 @@ fun ListWeather(modifier: Modifier) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                WeatherWidget(weather)
+                WeatherItem(weather, onItemClicked)
             }
         }
     }
 }
 
 @Composable
-fun WeatherWidget(weather: WeatherResponse) {
+fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit) {
     Surface(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                onItemClicked(weather)
+            },
         shape = RoundedCornerShape(12.dp),
         color = Color(0xFFEDEDF4)
     ) {
@@ -98,5 +103,5 @@ fun WeatherWidget(weather: WeatherResponse) {
 @Composable
 fun previewListWeather() {
     val w1 = getMockWeatherData()[0]
-    WeatherWidget(w1)
+    WeatherItem(w1, {})
 }
