@@ -13,29 +13,35 @@ import kotlinx.coroutines.launch
 class WeatherViewModel(
     private val weathersRepository: WeathersRepository
 ): ViewModel() {
-    val weathersUIState = MutableStateFlow(WeathersUIState())
+    val weatherUIState = MutableStateFlow(WeathersUIState())
 
     init {
-        getWeathers()
+        getWeather("toronto")
+        getWeather("calgary")
+        getWeather("vancouver")
+        getWeather("montreal")
+        getWeather("quebec")
+        getWeather("cebu")
+        getWeather("hong kong")
     }
 
-    private fun getWeathers() {
+    private fun getWeather(location: String) {
         Log.i("DENSHO", "getWeathers: ")
-        weathersUIState.value = WeathersUIState(isLoading = true)
+        weatherUIState.value = WeathersUIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = weathersRepository.getWeather()) {
+            when (val result = weathersRepository.getWeather(location)) {
                 is NetworkResult.Success -> {
-                    Log.i("DENSHO", "weather = "+weathersRepository.getWeather().toString())
-                    weathersUIState.update {
+                    Log.i("DENSHO", "weather = "+result.data.toString())
+                    weatherUIState.update {
                         //TODO fix
-                        val list = weathersUIState.value.weather
+                        val list = weatherUIState.value.weather
                         list.add(result.data)
                         it.copy(isLoading = false, weather = list)
                     }
                 }
                 is NetworkResult.Error -> {
                     Log.i("DENSHO", "error = "+ result.error)
-                    weathersUIState.update {
+                    weatherUIState.update {
                         it.copy(isLoading = false, error = result.error)
                     }
                 }

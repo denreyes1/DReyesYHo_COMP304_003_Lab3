@@ -1,5 +1,6 @@
 package com.dreyesyho.myapplication.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,16 +12,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dreyesyho.myapplication.data.WeatherResponse
 import com.dreyesyho.myapplication.data.getMockWeatherData
 import com.dreyesyho.myapplication.data.getWeatherIcon
@@ -32,20 +36,25 @@ import org.koin.androidx.compose.koinViewModel
 fun ListWeather(modifier: Modifier,
                 onItemClicked: (WeatherResponse) -> Unit) {
     val weatherViewModel: WeatherViewModel = koinViewModel()
-    LazyColumn (
-        modifier = modifier
-            .padding(top=16.dp),
+    val weatherUIState by weatherViewModel.weatherUIState.collectAsStateWithLifecycle()
+    AnimatedVisibility(
+        visible = weatherUIState.isLoading
     ) {
-        items(getMockWeatherData()) { weather ->
-            Row(
-                modifier = Modifier
-                    .padding(start=16.dp,end=16.dp, bottom = 16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+        CircularProgressIndicator()
+    }
+    AnimatedVisibility (
+        visible = weatherUIState.weather.isNotEmpty()
+    ) {
+        LazyColumn(Modifier.padding(top=32.dp)) {
+            items(weatherUIState.weather) { weather ->
                 WeatherItem(weather, onItemClicked)
             }
         }
+    }
+    AnimatedVisibility(
+        visible = weatherUIState.error != null
+    ) {
+        Text(text = weatherUIState.error ?: "")
     }
 }
 
@@ -54,6 +63,7 @@ fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Un
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(start=16.dp, end=16.dp, bottom = 16.dp)
             .clickable {
                 onItemClicked(weather)
             },
@@ -105,6 +115,13 @@ fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Un
 @Preview(showBackground = true)
 @Composable
 fun previewListWeather() {
+    val w1 = getMockWeatherData()[0]
+    ListWeather(Modifier, {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun previewListItemWeather() {
     val w1 = getMockWeatherData()[0]
     WeatherItem(w1, {})
 }

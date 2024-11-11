@@ -9,10 +9,11 @@ class WeathersRepositoryImpl(
     private val weathersAPI: WeathersAPI,
     private val dispatcher: CoroutineDispatcher
 ): WeathersRepository {
-    override suspend fun getWeather(): NetworkResult<WeatherResponse> {
+
+    override suspend fun getWeather(location: String): NetworkResult<WeatherResponse> {
         return withContext(dispatcher) {
             try {
-                val response = weathersAPI.fetchWeather("toronto", APIKEY)
+                val response = weathersAPI.fetchWeather(location, APIKEY)
                 if (response.isSuccessful) {
                     NetworkResult.Success(response.body()!!)
                 } else {
@@ -23,4 +24,5 @@ class WeathersRepositoryImpl(
             }
         }
     }
+
 }
