@@ -1,4 +1,9 @@
 package com.dreyesyho.myapplication.views
 
-class WeatherDetailsScreen {
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+
+@Composable
+fun WeatherDetailsScreen() {
+    Text(text = "This is WeatherDetailsScreen")
 }
