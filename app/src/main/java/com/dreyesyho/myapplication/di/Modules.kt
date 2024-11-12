@@ -6,11 +6,13 @@ import com.dreyesyho.myapplication.data.WeathersAPI
 import com.dreyesyho.myapplication.data.WeathersRepository
 import com.dreyesyho.myapplication.data.WeathersRepositoryImpl
 import com.dreyesyho.myapplication.viewmodel.WeatherViewModel
+import com.dreyesyho.myapplication.workers.WeatherSyncWorker
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
@@ -35,4 +37,6 @@ val appModules = module {
         ).build()
     }
     single { get<WeatherDatabase>().weatherDao() }
+
+    worker { WeatherSyncWorker(get(), get(), get()) }
 }

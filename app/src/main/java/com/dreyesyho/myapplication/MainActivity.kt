@@ -19,6 +19,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.dreyesyho.myapplication.navigation.AppNavigationContent
 import com.dreyesyho.myapplication.navigation.ContentType
 import com.dreyesyho.myapplication.navigation.DeviceFoldPosture
@@ -32,11 +37,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.dreyesyho.myapplication.ui.theme.DReyesYHo_COMP304_003_Lab3Theme
 import com.dreyesyho.myapplication.views.WeathersNavigationDrawer
+import com.dreyesyho.myapplication.workers.WeatherSyncWorker
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startWeatherSync()
         val deviceFoldingPostureFlow = WindowInfoTracker.getOrCreate(this).windowLayoutInfo(this)
             .flowWithLifecycle(this.lifecycle)
             .map { layoutInfo ->
@@ -175,6 +182,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun startWeatherSync() {
+        val syncWeatherWorkRequest =
+            OneTimeWorkRequestBuilder<WeatherSyncWorker>()
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .setRequiresBatteryNotLow(true)
+                        .build()
+                )
+                .build()
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniqueWork(
+                "WeatherSyncWorker",
+                ExistingWorkPolicy.KEEP,
+                syncWeatherWorkRequest
+            )
     }
 }
 

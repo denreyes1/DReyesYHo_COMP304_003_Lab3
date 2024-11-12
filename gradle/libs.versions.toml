@@ -22,6 +22,7 @@ koin = "3.4.3"
 koinCompose = "3.5.3"
 
 room = "2.5.2"
+work = "2.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +56,8 @@ koin-android-compose = { module = "io.insert-koin:koin-androidx-compose", versio
 room-runtime = { module = "androidx.room:room-runtime" , version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+workmanager-koin = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin" }
 
 
 [plugins]

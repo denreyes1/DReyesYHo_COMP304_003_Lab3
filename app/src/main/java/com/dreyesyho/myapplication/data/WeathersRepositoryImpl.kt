@@ -39,17 +39,21 @@ class WeathersRepositoryImpl(
                 }
                 .onEach {
                     if (it.isEmpty()) {
-                        fetchRemoteWeather("toronto")
-                        fetchRemoteWeather("calgary")
-                        fetchRemoteWeather("vancouver")
-                        fetchRemoteWeather("montreal")
-                        fetchRemoteWeather("quebec")
-                        fetchRemoteWeather("cebu")
-                        fetchRemoteWeather("hong kong")
-                        fetchRemoteWeather("mexico city")
+                        fetchRemoteWeathers()
                     }
                 }
         }
+    }
+
+    override suspend fun fetchRemoteWeathers() {
+        fetchRemoteWeather("toronto")
+        fetchRemoteWeather("calgary")
+        fetchRemoteWeather("vancouver")
+        fetchRemoteWeather("montreal")
+        fetchRemoteWeather("quebec")
+        fetchRemoteWeather("cebu")
+        fetchRemoteWeather("hong kong")
+        fetchRemoteWeather("mexico city")
     }
 
     override suspend fun fetchRemoteWeather(location: String) {

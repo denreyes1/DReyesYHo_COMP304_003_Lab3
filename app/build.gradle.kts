@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.androidx.window.size)
     implementation(libs.bundles.networking)
     implementation(libs.bundles.koin)
+    implementation(libs.work.runtime)
+    implementation(libs.workmanager.koin)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
