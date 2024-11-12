@@ -1,5 +1,7 @@
 package com.dreyesyho.myapplication.di
 
+import androidx.room.Room
+import com.dreyesyho.myapplication.data.WeatherDatabase
 import com.dreyesyho.myapplication.data.WeathersAPI
 import com.dreyesyho.myapplication.data.WeathersRepository
 import com.dreyesyho.myapplication.data.WeathersRepositoryImpl
@@ -8,11 +10,12 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
 val appModules = module {
-    single<WeathersRepository> { WeathersRepositoryImpl(get(), get()) }
+    single<WeathersRepository> { WeathersRepositoryImpl(get(), get(), get()) }
     single { Dispatchers.IO }
     single { WeatherViewModel(get()) }
     single {
@@ -23,4 +26,13 @@ val appModules = module {
             .build()
     }
     single { get<Retrofit>().create(WeathersAPI::class.java) }
+
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            WeatherDatabase::class.java,
+            "favorite-weather-database"
+        ).build()
+    }
+    single { get<WeatherDatabase>().weatherDao() }
 }

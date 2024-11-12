@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dreyesyho.myapplication.data.NetworkResult
 import com.dreyesyho.myapplication.data.WeathersRepository
+import com.dreyesyho.myapplication.data.asResult
 import com.dreyesyho.myapplication.views.WeathersUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -29,17 +30,17 @@ class WeatherViewModel(
     private fun getWeather(location: String) {
         weatherUIState.value = WeathersUIState(isLoading = true)
         viewModelScope.launch {
-            when (val result = weathersRepository.getWeather(location)) {
-                is NetworkResult.Success -> {
-                    weatherUIState.update {
-                        val list = weatherUIState.value.weather
-                        list.add(result.data)
-                        it.copy(isLoading = false, weather = list)
+            weathersRepository.getWeathers().asResult().collect() { result ->
+                when (result) {
+                    is NetworkResult.Success -> {
+                        weatherUIState.update {
+                            it.copy(isLoading = false, weather = result.data)
+                        }
                     }
-                }
-                is NetworkResult.Error -> {
-                    weatherUIState.update {
-                        it.copy(isLoading = false, error = result.error)
+                    is NetworkResult.Error -> {
+                        weatherUIState.update {
+                            it.copy(isLoading = false, error = result.error)
+                        }
                     }
                 }
             }

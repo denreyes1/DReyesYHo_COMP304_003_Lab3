@@ -64,8 +64,8 @@ data class Clouds(
 
 @Serializable
 data class Sys(
-    @SerialName("type") val type: Int,
-    @SerialName("id") val id: Int,
+    @SerialName("type") val type: Int? = null,
+    @SerialName("id") val id: Int? = null,
     @SerialName("country") val country: String,
     @SerialName("sunrise") val sunrise: Long,
     @SerialName("sunset") val sunset: Long
