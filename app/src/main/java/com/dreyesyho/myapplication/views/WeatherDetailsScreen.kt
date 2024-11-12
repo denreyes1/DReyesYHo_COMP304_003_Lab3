@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -85,96 +87,106 @@ fun WeatherDetailsScreen(onBackPressed: () -> Unit, weatherData: WeatherResponse
         },
         content = { paddingValues ->
             WeatherScreen(paddingValues, data)
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                icon = {
-                    Icon(
-                        imageVector =
-                        if (data.isFavorite)
-                            Icons.Default.Favorite
-                        else
-                            Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite Icon"
-                    )
-                },
-                text = {
-                    Text(
-                        if (data.isFavorite)
-                            "Remove from favorites"
-                        else
-                            "Add to favorites")
-                },
-                onClick = {
-                    // Toggle the favorite status
-                    val updatedWeatherData = data.copy(isFavorite = !data.isFavorite)
-                    data = updatedWeatherData
-
-                    weatherViewModel.updateWeather(data)
-                }
-            )
         }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(paddingValues: PaddingValues, weatherData: WeatherResponse) {
+    val weatherViewModel: WeatherViewModel = koinViewModel()
+    var data by remember { mutableStateOf(weatherData) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-//                    .background(Color(0xFF007FFF)) // Blue background color
             .padding(paddingValues)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .fillMaxWidth()
+                .padding(8.dp),
         ) {
-            val condition = weatherData.weather.get(0)
-            // Weather Condition
-            Text(
-                text = condition.description.capitalizeWords(),
-                fontSize = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Temperature and Icon
-            Row {
-                Text(
-                    text = "${kelvinToCelsius(weatherData.main.temp)}",
-                    fontSize = 80.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Image(
-                    painter = painterResource(id = getWeatherIcon(condition.main, isDaytime(weatherData))), // Replace with your moon icon resource
-                    contentDescription = "Moon Icon",
+            // Weather details card with FloatingActionButton
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(top = 8.dp)
-                )
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    val condition = weatherData.weather.get(0)
+                    // Weather Condition
+                    Text(
+                        text = condition.description.capitalizeWords(),
+                        fontSize = 18.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Temperature and Icon
+                    Row {
+                        Text(
+                            text = "${kelvinToCelsius(weatherData.main.temp)}",
+                            fontSize = 80.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Image(
+                            painter = painterResource(
+                                id = getWeatherIcon(
+                                    condition.main,
+                                    isDaytime(weatherData)
+                                )
+                            ),
+                            contentDescription = "Weather Icon",
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(top = 8.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Feels Like Temperature
+                    Text(
+                        text = "Feels like ${kelvinToCelsius(weatherData.main.feelsLike)}°",
+                        fontSize = 18.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // High and Low Temperatures
+                    Text(
+                        text = "High ${kelvinToCelsius(weatherData.main.tempMax)}° · Low ${
+                            kelvinToCelsius(
+                                weatherData.main.tempMin
+                            )
+                        }°",
+                        fontSize = 16.sp
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = {
+                        // Toggle the favorite status
+                        val updatedWeatherData = data.copy(isFavorite = !data.isFavorite)
+                        data = updatedWeatherData
+                        weatherViewModel.updateWeather(data)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = if (data.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite Icon"
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Feels Like Temperature
-            Text(
-                text = "Feels like ${kelvinToCelsius(weatherData.main.feelsLike)}°",
-                fontSize = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // High and Low Temperatures
-            Text(
-                text = "High ${kelvinToCelsius(weatherData.main.tempMax)}° · Low ${kelvinToCelsius(weatherData.main.tempMin)}°",
-                fontSize = 16.sp
-            )
-
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             WeatherDetailsCard(weatherData)
         }
     }
@@ -191,7 +203,7 @@ fun WeatherDetailsCard(weatherData: WeatherResponse) {
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
