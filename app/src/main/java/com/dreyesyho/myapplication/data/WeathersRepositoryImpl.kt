@@ -62,6 +62,7 @@ class WeathersRepositoryImpl(
             val response = weathersAPI.fetchWeather(location, APIKEY)
             if (response.isSuccessful) {
                 val weather = response.body()
+                val localWeather = weatherDao.getWeather(weather!!.id)
                 weatherDao.insert(WeatherEntity(
                     id = weather!!.id,
                     coord = weather.coord,
@@ -76,7 +77,7 @@ class WeathersRepositoryImpl(
                     timezone = weather.timezone,
                     name = weather.name,
                     cod = weather.cod,
-                    isFavorite = weather.isFavorite
+                    isFavorite = localWeather?.isFavorite ?: weather.isFavorite
                 ))
             }
         }

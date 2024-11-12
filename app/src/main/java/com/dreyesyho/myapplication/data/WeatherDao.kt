@@ -20,4 +20,7 @@ interface WeatherDao {
 
     @Query("SELECT * FROM Weather WHERE isFavorite = 1")
     fun getFavoriteWeathers() : Flow<List<WeatherEntity>>
+
+    @Query("SELECT * FROM Weather WHERE id = :id")
+    suspend fun getWeather(id: Int): WeatherEntity?
 }

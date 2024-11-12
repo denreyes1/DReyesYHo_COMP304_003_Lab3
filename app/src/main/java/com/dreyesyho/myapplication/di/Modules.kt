@@ -34,7 +34,7 @@ val appModules = module {
         Room.databaseBuilder(
             androidContext(),
             WeatherDatabase::class.java,
-            "favorite-weather-database"
+            "weather-database"
         ).build()
     }
     single { get<WeatherDatabase>().weatherDao() }
