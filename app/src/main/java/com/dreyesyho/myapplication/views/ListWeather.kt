@@ -55,10 +55,7 @@ fun ListWeather(modifier: Modifier,
             items(weatherUIState.weather) { weather ->
                 WeatherItem(
                     weather,
-                    onItemClicked,
-                    onFavoriteClicked = {
-                        weatherViewModel.updateWeather(it)
-                    }
+                    onItemClicked
                 )
             }
         }
@@ -72,7 +69,7 @@ fun ListWeather(modifier: Modifier,
 
 @Composable
 fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit,
-                onFavoriteClicked: (WeatherResponse) -> Unit) {
+                ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,25 +117,6 @@ fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -
                 text = "${kelvinToCelsius(weatherData.main.temp)}°",
                 style = MaterialTheme.typography.titleMedium
             )
-
-            Icon(
-                modifier = Modifier
-                    .clickable {
-                        onFavoriteClicked(weatherData.
-                        copy(isFavorite = !weatherData.isFavorite))
-                    },
-                imageVector = if (weatherData.isFavorite) {
-                    Icons.Default.Favorite
-                } else {
-                    Icons.Default.FavoriteBorder
-                },
-                contentDescription = "Favorite",
-                tint = if (weatherData.isFavorite) {
-                    Color.Red
-                } else {
-                    Color.Gray
-                },
-            )
         }
     }
 
@@ -157,5 +135,5 @@ fun previewListWeather() {
 @Composable
 fun previewListItemWeather() {
     val w1 = getMockWeatherData()[0]
-    WeatherItem(w1, {}, {})
+    WeatherItem(w1, {})
 }

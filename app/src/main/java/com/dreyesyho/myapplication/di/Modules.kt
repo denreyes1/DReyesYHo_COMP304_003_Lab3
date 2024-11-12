@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -19,7 +20,7 @@ import retrofit2.Retrofit
 val appModules = module {
     single<WeathersRepository> { WeathersRepositoryImpl(get(), get(), get()) }
     single { Dispatchers.IO }
-    single { WeatherViewModel(get()) }
+    viewModel { WeatherViewModel(get()) }
     single {
         val contentType = "application/json".toMediaType()
         Retrofit.Builder()

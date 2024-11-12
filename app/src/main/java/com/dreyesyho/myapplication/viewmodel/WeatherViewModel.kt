@@ -11,6 +11,7 @@ import com.dreyesyho.myapplication.views.WeathersUIState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(
@@ -52,6 +53,9 @@ class WeatherViewModel(
     }
 
     fun updateWeather(weather: WeatherResponse) {
+        if (!viewModelScope.isActive) {
+            return
+        }
         viewModelScope.launch {
             weathersRepository.updateWeather(weather)
         }
@@ -63,5 +67,9 @@ class WeatherViewModel(
                 _favoriteWeathers.value = it
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
     }
 }
