@@ -6,7 +6,7 @@ import com.dreyesyho.myapplication.data.WeatherResponse
 
 @Composable
 fun WeathersScreen(
-    onItemClicked: (WeatherResponse) -> Unit
+    onItemClicked: (WeatherResponse) -> Unit,
 ) {
     ListWeather(modifier = Modifier, onItemClicked = onItemClicked)
 }

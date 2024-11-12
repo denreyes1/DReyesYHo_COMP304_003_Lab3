@@ -47,7 +47,13 @@ fun AppNavigation(
         }
 
         composable(Screens.FavoriteWeathersScreen.route) {
-            FavoriteWeathersScreen()
+            FavoriteWeathersScreen(
+                onWeatherClicked = { weather ->
+                    navHostController.navigate(
+                        "${Screens.WeatherDetailsScreen.route}/${Json.encodeToString(weather)}"
+                    )
+                }
+            )
         }
     }
 }

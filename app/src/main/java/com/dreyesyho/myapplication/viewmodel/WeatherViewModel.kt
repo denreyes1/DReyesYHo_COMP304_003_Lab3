@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dreyesyho.myapplication.data.NetworkResult
+import com.dreyesyho.myapplication.data.WeatherResponse
 import com.dreyesyho.myapplication.data.WeathersRepository
 import com.dreyesyho.myapplication.data.asResult
 import com.dreyesyho.myapplication.views.WeathersUIState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -15,6 +17,8 @@ class WeatherViewModel(
     private val weathersRepository: WeathersRepository
 ): ViewModel() {
     val weatherUIState = MutableStateFlow(WeathersUIState())
+    private val _favoriteWeathers = MutableStateFlow<List<WeatherResponse>>(emptyList())
+    val favoriteWeathers: StateFlow<List<WeatherResponse>> get() = _favoriteWeathers
 
     init {
         getWeather("toronto")
@@ -43,6 +47,20 @@ class WeatherViewModel(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun updateWeather(weather: WeatherResponse) {
+        viewModelScope.launch {
+            weathersRepository.updateWeather(weather)
+        }
+    }
+
+    fun getFavoriteWeathers() {
+        viewModelScope.launch {
+            weathersRepository.getFavoriteWeather().collect {
+                _favoriteWeathers.value = it
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.dreyesyho.myapplication.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -21,5 +22,7 @@ data class WeatherEntity(
     val visibility: Int,
     val dt: Long,
     val base: String,
-    val cod: Int
+    val cod: Int,
+    @ColumnInfo(defaultValue = "0")
+    val isFavorite: Boolean = false
 )

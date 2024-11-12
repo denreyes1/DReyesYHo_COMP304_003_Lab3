@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,7 +53,13 @@ fun ListWeather(modifier: Modifier,
     ) {
         LazyColumn(Modifier.padding(top=32.dp)) {
             items(weatherUIState.weather) { weather ->
-                WeatherItem(weather, onItemClicked)
+                WeatherItem(
+                    weather,
+                    onItemClicked,
+                    onFavoriteClicked = {
+                        weatherViewModel.updateWeather(it)
+                    }
+                )
             }
         }
     }
@@ -61,7 +71,8 @@ fun ListWeather(modifier: Modifier,
 }
 
 @Composable
-fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit) {
+fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit,
+                onFavoriteClicked: (WeatherResponse) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,6 +120,25 @@ fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -
                 text = "${kelvinToCelsius(weatherData.main.temp)}°",
                 style = MaterialTheme.typography.titleMedium
             )
+
+            Icon(
+                modifier = Modifier
+                    .clickable {
+                        onFavoriteClicked(weatherData.
+                        copy(isFavorite = !weatherData.isFavorite))
+                    },
+                imageVector = if (weatherData.isFavorite) {
+                    Icons.Default.Favorite
+                } else {
+                    Icons.Default.FavoriteBorder
+                },
+                contentDescription = "Favorite",
+                tint = if (weatherData.isFavorite) {
+                    Color.Red
+                } else {
+                    Color.Gray
+                },
+            )
         }
     }
 
@@ -127,5 +157,5 @@ fun previewListWeather() {
 @Composable
 fun previewListItemWeather() {
     val w1 = getMockWeatherData()[0]
-    WeatherItem(w1, {})
+    WeatherItem(w1, {}, {})
 }

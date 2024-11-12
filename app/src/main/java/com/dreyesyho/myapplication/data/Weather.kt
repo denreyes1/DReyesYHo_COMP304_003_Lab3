@@ -22,7 +22,8 @@ data class WeatherResponse(
     @SerialName("timezone") val timezone: Int,
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String,
-    @SerialName("cod") val cod: Int
+    @SerialName("cod") val cod: Int,
+    val isFavorite: Boolean = false
 )
 
 @Serializable

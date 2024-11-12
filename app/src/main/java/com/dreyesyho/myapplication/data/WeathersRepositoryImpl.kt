@@ -33,6 +33,7 @@ class WeathersRepositoryImpl(
                             timezone = weatherEntity.timezone,
                             name = weatherEntity.name,
                             cod = weatherEntity.cod,
+                            isFavorite = weatherEntity.isFavorite
                         )
                     }
                 }
@@ -58,20 +59,70 @@ class WeathersRepositoryImpl(
                 val weather = response.body()
                 weatherDao.insert(WeatherEntity(
                     id = weather!!.id,
-                    coord = weather!!.coord,
-                    weather = weather!!.weather,
-                    base = weather!!.base,
-                    main = weather!!.main,
-                    visibility = weather!!.visibility,
-                    wind = weather!!.wind,
-                    clouds = weather!!.clouds,
-                    dt = weather!!.dt,
-                    sys = weather!!.sys,
-                    timezone = weather!!.timezone,
-                    name = weather!!.name,
-                    cod = weather!!.cod,
+                    coord = weather.coord,
+                    weather = weather.weather,
+                    base = weather.base,
+                    main = weather.main,
+                    visibility = weather.visibility,
+                    wind = weather.wind,
+                    clouds = weather.clouds,
+                    dt = weather.dt,
+                    sys = weather.sys,
+                    timezone = weather.timezone,
+                    name = weather.name,
+                    cod = weather.cod,
+                    isFavorite = weather.isFavorite
                 ))
             }
+        }
+    }
+
+    override suspend fun updateWeather(weather: WeatherResponse) {
+        withContext(dispatcher) {
+            weatherDao.update(
+                WeatherEntity(
+                    id = weather.id,
+                    coord = weather.coord,
+                    weather = weather.weather,
+                    base = weather.base,
+                    main = weather.main,
+                    visibility = weather.visibility,
+                    wind = weather.wind,
+                    clouds = weather.clouds,
+                    dt = weather.dt,
+                    sys = weather.sys,
+                    timezone = weather.timezone,
+                    name = weather.name,
+                    cod = weather.cod,
+                    isFavorite = weather.isFavorite
+                )
+            )
+        }
+    }
+
+    override suspend fun getFavoriteWeather(): Flow<List<WeatherResponse>> {
+        return withContext(dispatcher) {
+            weatherDao.getFavoriteWeathers()
+                .map { weathersCached ->
+                    weathersCached.map { weatherEntity ->
+                        WeatherResponse(
+                            id = weatherEntity.id,
+                            coord = weatherEntity.coord,
+                            weather = weatherEntity.weather,
+                            base = weatherEntity.base,
+                            main = weatherEntity.main,
+                            visibility = weatherEntity.visibility,
+                            wind = weatherEntity.wind,
+                            clouds = weatherEntity.clouds,
+                            dt = weatherEntity.dt,
+                            sys = weatherEntity.sys,
+                            timezone = weatherEntity.timezone,
+                            name = weatherEntity.name,
+                            cod = weatherEntity.cod,
+                            isFavorite = weatherEntity.isFavorite
+                        )
+                    }
+                }
         }
     }
 
