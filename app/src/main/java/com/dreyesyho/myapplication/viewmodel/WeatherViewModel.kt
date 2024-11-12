@@ -23,24 +23,21 @@ class WeatherViewModel(
         getWeather("quebec")
         getWeather("cebu")
         getWeather("hong kong")
+        getWeather("mexico city")
     }
 
     private fun getWeather(location: String) {
-        Log.i("DENSHO", "getWeathers: ")
         weatherUIState.value = WeathersUIState(isLoading = true)
         viewModelScope.launch {
             when (val result = weathersRepository.getWeather(location)) {
                 is NetworkResult.Success -> {
-                    Log.i("DENSHO", "weather = "+result.data.toString())
                     weatherUIState.update {
-                        //TODO fix
                         val list = weatherUIState.value.weather
                         list.add(result.data)
                         it.copy(isLoading = false, weather = list)
                     }
                 }
                 is NetworkResult.Error -> {
-                    Log.i("DENSHO", "error = "+ result.error)
                     weatherUIState.update {
                         it.copy(isLoading = false, error = result.error)
                     }

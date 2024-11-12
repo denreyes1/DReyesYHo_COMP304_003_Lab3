@@ -178,3 +178,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun String.capitalizeWords(): String = split(" ").map { it.capitalize() }.joinToString(" ")

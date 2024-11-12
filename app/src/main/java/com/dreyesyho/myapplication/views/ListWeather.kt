@@ -1,9 +1,9 @@
 package com.dreyesyho.myapplication.views
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,9 +25,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dreyesyho.myapplication.capitalizeWords
 import com.dreyesyho.myapplication.data.WeatherResponse
 import com.dreyesyho.myapplication.data.getMockWeatherData
 import com.dreyesyho.myapplication.data.getWeatherIcon
+import com.dreyesyho.myapplication.data.isDaytime
 import com.dreyesyho.myapplication.data.kelvinToCelsius
 import com.dreyesyho.myapplication.viewmodel.WeatherViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -59,13 +61,13 @@ fun ListWeather(modifier: Modifier,
 }
 
 @Composable
-fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit) {
+fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start=16.dp, end=16.dp, bottom = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
             .clickable {
-                onItemClicked(weather)
+                onItemClicked(weatherData)
             },
         shape = RoundedCornerShape(12.dp),
         color = Color(0xFFEDEDF4)
@@ -76,10 +78,10 @@ fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Un
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val condition = weather.weather.get(0).main
+            val condition = weatherData.weather.get(0)
             // Weather Icon
             Image(
-                painter = painterResource(id = getWeatherIcon(condition)), // Replace with your cloud icon resource
+                painter = painterResource(id = getWeatherIcon(condition.main, isDaytime(weatherData))), // Replace with your cloud icon resource
                 contentDescription = "Weather Icon",
                 modifier = Modifier
                     .size(36.dp)
@@ -91,12 +93,12 @@ fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Un
             ) {
                 // Location Name
                 Text(
-                    text = weather.name,
+                    text = weatherData.name,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 // Weather Description
                 Text(
-                    text = condition,
+                    text = condition.description.capitalizeWords(),
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -104,11 +106,13 @@ fun WeatherItem(weather: WeatherResponse, onItemClicked: (WeatherResponse) -> Un
 
             // Temperature
             Text(
-                text = "${kelvinToCelsius(weather.main.temp)}°",
+                text = "${kelvinToCelsius(weatherData.main.temp)}°",
                 style = MaterialTheme.typography.titleMedium
             )
         }
     }
+
+    val isDt = isDaytime(weatherData.dt, weatherData.sys.sunrise, weatherData.sys.sunset)
 }
 
 

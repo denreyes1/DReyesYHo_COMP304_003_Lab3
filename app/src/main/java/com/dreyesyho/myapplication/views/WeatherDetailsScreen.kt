@@ -30,9 +30,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dreyesyho.myapplication.R
+import com.dreyesyho.myapplication.capitalizeWords
 import com.dreyesyho.myapplication.data.WeatherResponse
 import com.dreyesyho.myapplication.data.getMockWeatherData
 import com.dreyesyho.myapplication.data.getWeatherIcon
+import com.dreyesyho.myapplication.data.isDaytime
 import com.dreyesyho.myapplication.data.kelvinToCelsius
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,10 +85,10 @@ fun WeatherScreen(paddingValues: PaddingValues, weatherData: WeatherResponse) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            val condition = weatherData.weather.get(0).main
+            val condition = weatherData.weather.get(0)
             // Weather Condition
             Text(
-                text = condition,
+                text = condition.description.capitalizeWords(),
                 fontSize = 18.sp
             )
 
@@ -101,7 +103,7 @@ fun WeatherScreen(paddingValues: PaddingValues, weatherData: WeatherResponse) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Image(
-                    painter = painterResource(id = getWeatherIcon(condition)), // Replace with your moon icon resource
+                    painter = painterResource(id = getWeatherIcon(condition.main, isDaytime(weatherData))), // Replace with your moon icon resource
                     contentDescription = "Moon Icon",
                     modifier = Modifier
                         .size(48.dp)

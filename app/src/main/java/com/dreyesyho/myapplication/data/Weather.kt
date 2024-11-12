@@ -1,8 +1,11 @@
 package com.dreyesyho.myapplication.data
 
+import android.content.Context
 import com.dreyesyho.myapplication.R
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import java.util.Calendar
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 @Serializable
@@ -126,13 +129,23 @@ fun kelvinToCelsius(kelvin: Double): Int {
     return celsius.roundToInt()
 }
 
-fun getWeatherIcon(weatherCondition: String): Int {
+fun getWeatherIcon(weatherCondition: String, isDaytime: Boolean): Int {
     return when (weatherCondition) {
-        "Clear" -> R.drawable.clear_day
-        "Clouds" -> R.drawable.partly_cloudy_day
+        "Clear" -> if(isDaytime) R.drawable.clear_day else R.drawable.clear_night
+        "Clouds" -> if(isDaytime) R.drawable.partly_cloudy_day else R.drawable.partly_cloudy_night
         "Rain" -> R.drawable.showers_rain
         "Snow" -> R.drawable.showers_snow
         "Thunderstorm" -> R.drawable.strong_thunderstorms
+        "Mist", "Fog" -> R.drawable.haze_fog_dust_smoke
         else -> R.drawable.cloudy
     }
+}
+
+fun isDaytime(response: WeatherResponse): Boolean {
+    val condition = response.weather[0]
+    return isDaytime(response.dt, response.sys.sunrise, response.sys.sunset)
+}
+
+fun isDaytime(dt: Long, sunriseTime: Long, sunsetTime: Long): Boolean {
+    return dt in sunriseTime until sunsetTime
 }
