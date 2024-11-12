@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dreyesyho.myapplication.data.WeatherResponse
@@ -32,6 +33,7 @@ fun WeathersScreen(
             modifier = Modifier
                 .padding(top = 44.dp, bottom = 12.dp, end = 24.dp, start = 24.dp)
                 .fillMaxWidth(),
+            fontWeight = FontWeight.Bold,
             style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
         )
 

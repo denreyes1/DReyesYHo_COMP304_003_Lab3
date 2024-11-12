@@ -77,8 +77,6 @@ fun WeatherItem(weatherData: WeatherResponse, onItemClicked: (WeatherResponse) -
             )
         }
     }
-
-    val isDt = isDaytime(weatherData.dt, weatherData.sys.sunrise, weatherData.sys.sunset)
 }
 
 @Preview(showBackground = true)

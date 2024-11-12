@@ -4,7 +4,10 @@ import android.content.Context
 import com.dreyesyho.myapplication.R
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 import kotlin.math.roundToInt
 
@@ -143,10 +146,35 @@ fun getWeatherIcon(weatherCondition: String, isDaytime: Boolean): Int {
 }
 
 fun isDaytime(response: WeatherResponse): Boolean {
-    val condition = response.weather[0]
     return isDaytime(response.dt, response.sys.sunrise, response.sys.sunset)
 }
 
 fun isDaytime(dt: Long, sunriseTime: Long, sunsetTime: Long): Boolean {
     return dt in sunriseTime until sunsetTime
+}
+
+fun getWindDirection(degrees: Int): String {
+    return when {
+        degrees in 337..360 || degrees in 0..22 -> "N"
+        degrees in 23..67 -> "NE"
+        degrees in 68..112 -> "E"
+        degrees in 113..157 -> "SE"
+        degrees in 158..202 -> "S"
+        degrees in 203..247 -> "SW"
+        degrees in 248..292 -> "W"
+        degrees in 293..336 -> "NW"
+        else -> "N/A"
+    }
+}
+
+fun formatTime(timestamp: Long, timezoneOffset: Int): String {
+    val date = Date(timestamp * 1000)
+    val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+    // Apply the timezone offset from the API
+    format.timeZone = TimeZone.getTimeZone("GMT").apply {
+        rawOffset = timezoneOffset * 1000
+    }
+
+    return format.format(date)
 }

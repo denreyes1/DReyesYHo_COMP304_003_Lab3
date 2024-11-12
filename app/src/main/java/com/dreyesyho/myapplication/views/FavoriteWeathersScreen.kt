@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +40,7 @@ fun FavoriteWeathersScreen(
             modifier = Modifier
                 .padding(top=44.dp, bottom=12.dp, end=24.dp, start=24.dp)
                 .fillMaxWidth(),
+            fontWeight = FontWeight.Bold,
             style = androidx.compose.material3.MaterialTheme.typography.headlineSmall
         )
 
