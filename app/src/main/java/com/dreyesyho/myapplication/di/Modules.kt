@@ -1,6 +1,7 @@
 package com.dreyesyho.myapplication.di
 
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.dreyesyho.myapplication.data.WeatherDatabase
 import com.dreyesyho.myapplication.data.WeathersAPI
 import com.dreyesyho.myapplication.data.WeathersRepository
@@ -35,7 +36,8 @@ val appModules = module {
             androidContext(),
             WeatherDatabase::class.java,
             "weather-database"
-        ).build()
+        ).setJournalMode(RoomDatabase.JournalMode.TRUNCATE).build()
+        //.setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
     }
     single { get<WeatherDatabase>().weatherDao() }
 
