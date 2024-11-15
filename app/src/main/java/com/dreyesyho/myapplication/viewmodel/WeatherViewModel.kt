@@ -23,13 +23,7 @@ class WeatherViewModel(
 
     init {
         getWeather("toronto")
-        getWeather("calgary")
         getWeather("vancouver")
-        getWeather("montreal")
-        getWeather("quebec")
-        getWeather("cebu")
-        getWeather("hong kong")
-        getWeather("mexico city")
     }
 
     private fun getWeather(location: String) {
@@ -46,6 +40,24 @@ class WeatherViewModel(
                         weatherUIState.update {
                             it.copy(isLoading = false, error = result.error)
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getWeatherRemote(location: String) {
+        weatherUIState.value = WeathersUIState(isLoading = true, weather = weatherUIState.value.weather)
+        viewModelScope.launch {
+            when (val result = weathersRepository.fetchRemoteWeatherWithCallback(location)) {
+                is NetworkResult.Success -> {
+                    weatherUIState.update {
+                        it.copy(isLoading = false, weather = it.weather, query = result.data)
+                    }
+                }
+                is NetworkResult.Error -> {
+                    weatherUIState.update {
+                        it.copy(isLoading = false, weather = it.weather, error = result.error)
                     }
                 }
             }

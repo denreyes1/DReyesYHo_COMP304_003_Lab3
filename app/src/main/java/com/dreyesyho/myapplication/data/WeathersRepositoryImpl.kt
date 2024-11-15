@@ -48,13 +48,7 @@ class WeathersRepositoryImpl(
 
     override suspend fun fetchRemoteWeathers() {
         fetchRemoteWeather("toronto")
-        fetchRemoteWeather("calgary")
         fetchRemoteWeather("vancouver")
-        fetchRemoteWeather("montreal")
-        fetchRemoteWeather("quebec")
-        fetchRemoteWeather("cebu")
-        fetchRemoteWeather("hong kong")
-        fetchRemoteWeather("mexico city")
     }
 
     override suspend fun fetchRemoteWeather(location: String) {
@@ -79,6 +73,21 @@ class WeathersRepositoryImpl(
                     cod = weather.cod,
                     isFavorite = localWeather?.isFavorite ?: weather.isFavorite
                 ))
+            }
+        }
+    }
+
+    override suspend fun fetchRemoteWeatherWithCallback(location: String): NetworkResult<WeatherResponse> {
+        return withContext(dispatcher) {
+            try {
+                val response = weathersAPI.fetchWeather(location, APIKEY)
+                if (response.isSuccessful) {
+                    NetworkResult.Success(response.body()!!)
+                } else {
+                    NetworkResult.Error(response.errorBody().toString())
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error(e.message ?: "Unknown error")
             }
         }
     }

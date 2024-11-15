@@ -1,5 +1,7 @@
 package com.dreyesyho.myapplication.views
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,13 +31,12 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun WeathersScreen(
-    onItemClicked: (WeatherResponse) -> Unit,
-//    onSearchItemClick: (String) -> Unit
+    onItemClicked: (WeatherResponse) -> Unit
 ) {
     val weatherViewModel: WeatherViewModel = koinViewModel()
     val weatherUIState by weatherViewModel.weatherUIState.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
-    val cities = listOf("Toronto", "Calgary", "Vancouver", "Montreal", "Quebec", "Cebu", "Hong Kong", "Mexico City")
+    val cities = listOf("Toronto", "Calgary", "Vancouver", "Montreal", "Quebec", "Cebu", "Hong Kong", "Mexico City", "Manila")
 
     // Filter the list of cities based on the query
     val filteredCities = if (query.isEmpty()) {
@@ -43,6 +44,9 @@ fun WeathersScreen(
     } else {
         cities.filter { it.contains(query, ignoreCase = true) }
     }
+
+    // Loading state when searching for weather
+    val isLoading = weatherUIState.isLoading
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -90,7 +94,8 @@ fun WeathersScreen(
         // Display search results
         if (filteredCities.isNotEmpty()) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(vertical = 8.dp)
             ) {
                 items(filteredCities) { city ->
@@ -98,7 +103,7 @@ fun WeathersScreen(
                         modifier = Modifier
                             .fillMaxWidth() // Fill the entire width
                             .clickable {
-                                // onSearchItemClick(city)
+                                weatherViewModel.getWeatherRemote(city) // Fetch weather data
                             }
                             .padding(horizontal = 24.dp, vertical = 4.dp) // Padding around the item
                     ) {
@@ -114,13 +119,19 @@ fun WeathersScreen(
             }
         }
 
-
-        androidx.compose.animation.AnimatedVisibility(
-            visible = weatherUIState.isLoading
+        // Show loading indicator while fetching weather data
+        AnimatedVisibility(
+            visible = isLoading
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp)
+            )
         }
-        androidx.compose.animation.AnimatedVisibility(
+
+        // Show weather data once it's fetched
+        AnimatedVisibility(
             visible = weatherUIState.weather.isNotEmpty()
         ) {
             if (query.isEmpty()) {
@@ -133,16 +144,24 @@ fun WeathersScreen(
                     items(weatherUIState.weather) { weather ->
                         WeatherItem(
                             weather,
-                            onItemClicked
+                            onItemClicked = onItemClicked
                         )
                     }
                 }
             }
         }
-        androidx.compose.animation.AnimatedVisibility(
+
+        // Show error message if any error occurred
+        AnimatedVisibility(
             visible = weatherUIState.error != null
         ) {
             Text(text = weatherUIState.error ?: "")
+        }
+
+        if (weatherUIState.query != null) {
+            Log.i("DENSHO", "searched item: "+weatherUIState.query)
+            onItemClicked(weatherUIState.query!!)
+            weatherUIState.query = null
         }
     }
 }
@@ -150,20 +169,4 @@ fun WeathersScreen(
 @Preview(showBackground = true)
 @Composable
 fun WeathersScreenPreview() {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth() // Fill the entire width
-                        .clickable {
-                            // onSearchItemClick(city)
-                        }
-                        .padding(horizontal = 24.dp, vertical = 4.dp) // Padding around the item
-                ) {
-                    Text(
-                        text = "City",
-                        modifier = Modifier
-                            .align(Alignment.CenterStart) // Align text to the start
-                            .padding(vertical = 12.dp), // Padding at the top
-                        fontWeight = FontWeight.Medium
-                    )
-                }
 }
