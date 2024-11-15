@@ -178,3 +178,5 @@ fun formatTime(timestamp: Long, timezoneOffset: Int): String {
 
     return format.format(date)
 }
+
+val cities = listOf("Toronto", "Calgary", "Vancouver", "Montreal", "Quebec", "Cebu", "Hong Kong", "Mexico City", "Manila")

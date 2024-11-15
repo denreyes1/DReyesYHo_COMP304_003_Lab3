@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dreyesyho.myapplication.data.WeatherResponse
+import com.dreyesyho.myapplication.data.cities
 import com.dreyesyho.myapplication.viewmodel.WeatherViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -36,7 +37,6 @@ fun WeathersScreen(
     val weatherViewModel: WeatherViewModel = koinViewModel()
     val weatherUIState by weatherViewModel.weatherUIState.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
-    val cities = listOf("Toronto", "Calgary", "Vancouver", "Montreal", "Quebec", "Cebu", "Hong Kong", "Mexico City", "Manila")
 
     // Filter the list of cities based on the query
     val filteredCities = if (query.isEmpty()) {
@@ -101,17 +101,17 @@ fun WeathersScreen(
                 items(filteredCities) { city ->
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth() // Fill the entire width
+                            .fillMaxWidth()
                             .clickable {
-                                weatherViewModel.getWeatherRemote(city) // Fetch weather data
+                                weatherViewModel.getWeatherRemote(city)
                             }
-                            .padding(horizontal = 24.dp, vertical = 4.dp) // Padding around the item
+                            .padding(horizontal = 24.dp, vertical = 4.dp)
                     ) {
                         Text(
                             text = city,
                             modifier = Modifier
-                                .align(Alignment.CenterStart) // Align text to the start
-                                .padding(vertical = 12.dp), // Padding at the top
+                                .align(Alignment.CenterStart)
+                                .padding(vertical = 12.dp),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -123,18 +123,26 @@ fun WeathersScreen(
         AnimatedVisibility(
             visible = isLoading
         ) {
-            CircularProgressIndicator(
+            Column(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp)
-            )
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 16.dp)
+                )
+            }
         }
 
-        // Show weather data once it's fetched
+        // Show weather data once it's fetched or show empty state if weather list is empty
         AnimatedVisibility(
-            visible = weatherUIState.weather.isNotEmpty()
+            visible = weatherUIState.weather.isNotEmpty() || query.isNotEmpty()
         ) {
-            if (query.isEmpty()) {
+            if (weatherUIState.weather.isNotEmpty()) {
+                // Show the weather data in a LazyColumn
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -148,6 +156,16 @@ fun WeathersScreen(
                         )
                     }
                 }
+            } else {
+                // Show "No locations to display" if weather data is empty
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "No locations to display")
+                }
             }
         }
 
@@ -155,11 +173,16 @@ fun WeathersScreen(
         AnimatedVisibility(
             visible = weatherUIState.error != null
         ) {
-            Text(text = weatherUIState.error ?: "")
+            Text(
+                text = weatherUIState.error ?: "",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp),
+                style = androidx.compose.material3.MaterialTheme.typography.bodyLarge
+            )
         }
 
         if (weatherUIState.query != null) {
-            Log.i("DENSHO", "searched item: "+weatherUIState.query)
             onItemClicked(weatherUIState.query!!)
             weatherUIState.query = null
         }

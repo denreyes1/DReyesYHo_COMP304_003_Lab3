@@ -1,6 +1,5 @@
 package com.dreyesyho.myapplication.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dreyesyho.myapplication.data.NetworkResult
@@ -22,11 +21,10 @@ class WeatherViewModel(
     val favoriteWeathers: StateFlow<List<WeatherResponse>> get() = _favoriteWeathers
 
     init {
-        getWeather("toronto")
-        getWeather("vancouver")
+        getWeathers()
     }
 
-    private fun getWeather(location: String) {
+    private fun getWeathers() {
         weatherUIState.value = WeathersUIState(isLoading = true)
         viewModelScope.launch {
             weathersRepository.getWeathers().asResult().collect() { result ->

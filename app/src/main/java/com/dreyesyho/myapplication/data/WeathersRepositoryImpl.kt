@@ -47,8 +47,8 @@ class WeathersRepositoryImpl(
     }
 
     override suspend fun fetchRemoteWeathers() {
-        fetchRemoteWeather("toronto")
-        fetchRemoteWeather("vancouver")
+//        fetchRemoteWeather("toronto")
+//        fetchRemoteWeather("vancouver")
     }
 
     override suspend fun fetchRemoteWeather(location: String) {
@@ -82,7 +82,25 @@ class WeathersRepositoryImpl(
             try {
                 val response = weathersAPI.fetchWeather(location, APIKEY)
                 if (response.isSuccessful) {
-                    NetworkResult.Success(response.body()!!)
+                    val weather = response.body()
+                    val localWeather = weatherDao.getWeather(weather!!.id)
+                    weatherDao.insert(WeatherEntity(
+                        id = weather!!.id,
+                        coord = weather.coord,
+                        weather = weather.weather,
+                        base = weather.base,
+                        main = weather.main,
+                        visibility = weather.visibility,
+                        wind = weather.wind,
+                        clouds = weather.clouds,
+                        dt = weather.dt,
+                        sys = weather.sys,
+                        timezone = weather.timezone,
+                        name = weather.name,
+                        cod = weather.cod,
+                        isFavorite = localWeather?.isFavorite ?: weather.isFavorite
+                    ))
+                    NetworkResult.Success(weather!!)
                 } else {
                     NetworkResult.Error(response.errorBody().toString())
                 }
